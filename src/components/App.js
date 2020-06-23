@@ -19,19 +19,30 @@ class App extends Component {
   }
   
   componentDidMount() {
-
+      axios.get('https://practiceapi.devmountain.com/api/posts')
+      .then( results => {
+      this.setState({ posts: results.data });
+    });
   }
 
   updatePost() {
-  
+    axios.put(`https://practiceapi.devmountain.com/api/posts?id=${ id }`, { text })
+    .then( results => {
+      this.setState({ posts: results.data });
+    });
   }
 
   deletePost() {
-
+    Axios.delete(`${this.state.baseUrl}posts?id=${id}`)
+    .then((result) => this.setState({ posts: result.data }))
+    .catch(() => console.log("Failed to delete post"));
   }
 
-  createPost() {
-
+  createPost( text ) {
+    axios.post('https://practiceapi.devmountain.com/api/posts', { text })
+    .then( results => {
+    this.setState({ posts: results.data });
+    });
   }
 
   render() {
@@ -42,12 +53,19 @@ class App extends Component {
         <Header />
 
         <section className="App__content">
-
-          <Compose />
-          
+          <Compose createPostFn={this.createPost} />
+          {posts.map((post) => (
+            <Post
+              key={post.id}
+              text={post.text}
+              date={post.date}
+              updatePostFn={this.updatePost}
+              id={post.id}
+              deletePostFn={this.deletePost}
+            />
+          ))}
         </section>
       </div>
-    );
   }
 }
 
